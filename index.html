@@ -3,8 +3,24 @@
 	<head>
 		<meta charset="utf-8">
 		<title>liam-tools</title>
+		<script src="jquery-3.4.1.min.js"></script>
+		<script>
+			function submitCalc(){
+				var totalAmt = document.getElementById("totalAmt").value;
+				var term = document.getElementById("term").value;
+				alert(totalAmt);
+			}
+			$(()=>{
+				$("#term").val(12);
+			})
+		</script>
 	</head>
+	
 	<body>
-		<h1>这是一个测试页面</h1>
+		<div>
+			<p>总金额：<input id="totalAmt" value="50000"/> </p>
+			<p>期限：<input id="term"/></p>
+			<p><button id="submit" onclick="submitCalc()">提交</button></p>
+		</div>
 	</body>
 </html>
