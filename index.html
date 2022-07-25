@@ -4,23 +4,31 @@
 		<meta charset="utf-8">
 		<title>liam-tools</title>
 		<script src="jquery-3.4.1.min.js"></script>
+		<script src="tool.js"></script>
 		<script>
-			function submitCalc(){
-				var totalAmt = document.getElementById("totalAmt").value;
-				var term = document.getElementById("term").value;
-				alert(totalAmt);
-			}
 			$(()=>{
 				$("#term").val(12);
+				$("#rate").val(10.88);
+				
+				$("#submit").click(()=>{
+					var ir = parseFloat($('#rate').val()) / 1200;
+					var np = parseInt($('#term').val());
+					var pv = parseFloat($('#totalAmt').val());
+					var fv = parseFloat($('#finalAmt').val());
+					var result = PMT(ir, np, -pv, fv).toFixed(2)
+					alert(result);
+				});
 			})
 		</script>
 	</head>
 	
 	<body>
 		<div>
-			<p>总金额：<input id="totalAmt" value="50000"/> </p>
-			<p>期限：<input id="term"/></p>
-			<p><button id="submit" onclick="submitCalc()">提交</button></p>
+			<p>借款(元)：<input id="totalAmt" value="10000"/> </p>
+			<p>尾付(元)：<input id="finalAmt" value="2000"/> </p>
+			<p>期限(月)：<input id="term"/></p>
+			<p>利率(%)：<input id="rate"/></p>
+			<p><button id="submit">提交</button></p>
 		</div>
 	</body>
 </html>
