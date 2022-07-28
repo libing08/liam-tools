@@ -2,33 +2,63 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>liam-tools</title>
-		<script src="jquery-3.4.1.min.js"></script>
-		<script src="tool.js"></script>
+		<title>easyui demo</title>
+		<link rel="stylesheet" type="text/css" href="resources/easyui.css">
+		<link rel="stylesheet" href="resources/icon.css">
+		<link rel="stylesheet" type="text/css" href="resources/demo.css">
+		<script src="resources/js/jquery.min.js"></script>
+		<script src="resources/js/jquery.easyui.min.js"></script>
+		<script src="resources/js/decimal.js"></script>
+		<script src="resources/js/tool.js"></script>
+		<script src="resources/js/calcHandler.js"></script>
 		<script>
-			$(()=>{
-				$("#term").val(12);
-				$("#rate").val(10.88);
-				
-				$("#submit").click(()=>{
-					var ir = parseFloat($('#rate').val()) / 1200;
-					var np = parseInt($('#term').val());
-					var pv = parseFloat($('#totalAmt').val());
-					var fv = parseFloat($('#finalAmt').val());
-					var result = PMT(ir, np, -pv, fv).toFixed(2)
-					alert(result);
-				});
+			$(() => {
+				CalcHandler.calcRepayPlans();
 			})
 		</script>
 	</head>
-	
 	<body>
-		<div>
-			<p>借款(元)：<input id="totalAmt" value="10000"/> </p>
-			<p>尾付(元)：<input id="finalAmt" value="2000"/> </p>
-			<p>期限(月)：<input id="term"/></p>
-			<p>利率(%)：<input id="rate"/></p>
-			<p><button id="submit">提交</button></p>
+		<div id="tt" class="easyui-tabs" style="width:100%;min-height:550px"
+			data-options="tabPosition:'left', headerWidth:130, tabWidth:120,pill:true">
+			<div title="等额本息" style="padding:10px; ">
+				<div class="easyui-panel" title="基础数据" style="width: 500px; min-height:400px;padding:30px 60px; ">
+					<form id="ff" method="post" >
+						<div style="margin-bottom:20px">
+							<input class="easyui-textbox" name="totalAmt" style="width:100%" value="10000"
+								data-options="label:'借款(元):',required:true">
+						</div>
+						<div style="margin-bottom:20px">
+							<input class="easyui-textbox" name="finalAmt" style="width:100%" value="0"
+								data-options="label:'尾付(元):',required:true">
+						</div>
+						<div style="margin-bottom:20px">
+							<input class="easyui-textbox" name="term" style="width:100%" value="12"
+								data-options="label:'期限(月):',required:true">
+						</div>
+						<div style="margin-bottom:20px">
+							<input class="easyui-textbox" name="rate" style="width:100%" value="10.88"
+								data-options="label:'利率(%):',required:true">
+						</div>
+						<div style="margin-bottom:20px">
+							<select class="easyui-combobox" name="repayMethod" label="月租计算:" style="width:50%">
+								<option value="debx">等额本息</option>
+								<option value="debj">等额本金</option>
+								<option value="dbdx">等本等息</option>
+								<option value="xxhb">先息后本</option>
+							</select>
+						</div>
+					</form>
+					<div style="text-align:left;padding:5px 0">
+						<a href="javascript:void(0)" class="easyui-linkbutton" id="submit" style="width:80px">计算</a>
+					</div>
+				</div>
+				<table id="planTable" data-options="singleSelect: true" style="margin: 30px;"></table>
+			</div>
+			<div title="其它工具" style="padding:10px">
+				<p>待更新…….</p>
+			</div>
+
 		</div>
+
 	</body>
 </html>
