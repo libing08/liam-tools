@@ -83,10 +83,9 @@ var CalcHandler = {
 		var plans = [];
 		// 使用pmt计算月供
 		var monthAmt = parseFloat($.calcPmt(dataObj));
-		// 总期数
-		var term = parseInt(dataObj.term);
-		// 月利率
-		var rate = parseFloat(dataObj.rate) / 1200
+		var finalAmt = parseFloat(dataObj.finalAmt); // 尾付
+		var term = parseInt(dataObj.term); // 总期数
+		var rate = parseFloat(dataObj.rate) / 1200; // 月利率
 		// 每一期还款计划表项
 		var planItem = {
 			beginAmt: parseFloat(dataObj.totalAmt), //期初本金
@@ -94,7 +93,6 @@ var CalcHandler = {
 			principalAmt: 0.0, //每期本金
 			paidAmt: 0.0 //每期利息
 		};
-		
 		for (var i = 1; i < term; i++) {
 			// 期数
 			planItem.term = i;
@@ -108,11 +106,13 @@ var CalcHandler = {
 		}
 		// 最后一期，平尾差
 		planItem.beginAmt = $.sub(planItem.beginAmt, planItem.principalAmt);
-		planItem.principalAmt = planItem.beginAmt;
 		planItem.paidAmt = $.round($.mul(planItem.beginAmt, rate));
+		planItem.principalAmt = $.sub(planItem.beginAmt, finalAmt);
 		planItem.monthAmt = $.add(planItem.principalAmt, planItem.paidAmt);
 		planItem.term = term;
 		plans.push(planItem);
+		// 添加尾付还款计划表项
+		CalcHandler.addFinalPlanItem(plans, finalAmt);
 		return plans;
 	},
 	/**
@@ -120,10 +120,10 @@ var CalcHandler = {
 	 */
 	calcDebjRepayPlan: (dataObj) => {
 		var plans = [];
-		
 		var term = parseInt(dataObj.term); // 总期数
 		var totalAmt = parseFloat(dataObj.totalAmt); //总金额
-		var principalAmt = $.round($.div(totalAmt, term)); // 每期本金
+		var finalAmt = parseFloat(dataObj.finalAmt); // 尾付
+		var principalAmt = $.round($.div($.sub(totalAmt, finalAmt), term)); // 每期本金
 		// 月利率
 		var rate = parseFloat(dataObj.rate) / 1200
 		// 每一期还款计划表项
@@ -147,11 +147,13 @@ var CalcHandler = {
 		}
 		// 最后一期，平尾差
 		planItem.beginAmt = $.sub(planItem.beginAmt, planItem.principalAmt);
-		planItem.principalAmt = planItem.beginAmt;
+		planItem.principalAmt = $.sub(planItem.beginAmt, finalAmt);
 		planItem.paidAmt = $.round($.mul(planItem.beginAmt, rate));
 		planItem.monthAmt = $.add(planItem.principalAmt, planItem.paidAmt);
 		planItem.term = term;
 		plans.push(planItem);
+		// 添加尾付还款计划表项
+		CalcHandler.addFinalPlanItem(plans, finalAmt);
 		return plans;
 	},
 	/**
@@ -161,7 +163,8 @@ var CalcHandler = {
 		var plans = [];
 		var term = parseInt(dataObj.term); // 总期数
 		var totalAmt = parseFloat(dataObj.totalAmt); //总金额
-		var principalAmt = $.round($.div(totalAmt, term)); // 每期本金
+		var finalAmt = parseFloat(dataObj.finalAmt); // 尾付
+		var principalAmt = $.round($.div($.sub(totalAmt,finalAmt), term)); // 每期本金
 		var rate = parseFloat(dataObj.rate) / 1200; // 月利率
 		var paidAmt = $.round($.mul(totalAmt, rate)); // 利息=总金额*月利率
 		
@@ -182,10 +185,12 @@ var CalcHandler = {
 		}
 		// 最后一期，平尾差
 		planItem.beginAmt = $.sub(planItem.beginAmt, planItem.principalAmt);
-		planItem.principalAmt = planItem.beginAmt;
+		planItem.principalAmt = $.sub(planItem.beginAmt,finalAmt);
 		planItem.monthAmt = $.add(planItem.principalAmt, planItem.paidAmt);
 		planItem.term = term;
 		plans.push(planItem);
+		// 添加尾付还款计划表项
+		CalcHandler.addFinalPlanItem(plans, finalAmt);
 		return plans;
 	},
 	/**
@@ -195,6 +200,7 @@ var CalcHandler = {
 		var plans = [];
 		var term = parseInt(dataObj.term); // 总期数
 		var totalAmt = parseFloat(dataObj.totalAmt); //总金额
+		var finalAmt = parseFloat(dataObj.finalAmt); // 尾付
 		var principalAmt = $.round($.div(totalAmt, term)); // 每期本金
 		var rate = parseFloat(dataObj.rate) / 1200; // 月利率
 		var paidAmt = $.round($.mul(totalAmt, rate)); // 利息=总金额*月利率
@@ -212,10 +218,19 @@ var CalcHandler = {
 			plans.push($.extend({}, planItem));
 		}
 		// 最后一期，平尾差
-		planItem.principalAmt = planItem.beginAmt;
+		planItem.principalAmt = $.sub(planItem.beginAmt,finalAmt);
 		planItem.monthAmt = $.add(planItem.principalAmt, planItem.paidAmt);
 		planItem.term = term;
 		plans.push(planItem);
+		// 添加尾付还款计划表项
+		CalcHandler.addFinalPlanItem(plans, finalAmt);
 		return plans;
+	},
+	// 添加尾付
+	addFinalPlanItem: (plans, finalAmt) => {
+		// 有尾付的处理
+		if(finalAmt > 0) {
+			plans.push({term: 99, beginAmt: finalAmt, principalAmt: finalAmt, paidAmt: 0, monthAmt: finalAmt});
+		}
 	}
 }

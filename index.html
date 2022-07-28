@@ -9,7 +9,6 @@
 		<style>
 			.bg-content {
 				background-color: #d5ebe1;
-				/* opacity:0.5; */
 			}
 		</style>
 		<script src="resources/js/jquery.min.js"></script>
@@ -26,7 +25,7 @@
 	<body class="bg-content">
 		<div id="tt" class="easyui-tabs bg-content" style="width:100%;min-height:550px"
 			data-options="tabPosition:'left', headerWidth:130, tabWidth:120,pill:true">
-			<div title="等额本息" class="bg-content" style="padding:10px;" >
+			<div title="融资试算" class="bg-content" style="padding:10px;" >
 				<div class="easyui-panel bg-content" title="基础数据" style="width: 500px; min-height:400px;padding:30px 60px;">
 					<form id="ff" method="post" >
 						<div style="margin-bottom:20px">
@@ -34,8 +33,9 @@
 								data-options="label:'借款(元):',required:true">
 						</div>
 						<div style="margin-bottom:20px">
-							<input class="easyui-textbox" name="finalAmt" style="width:100%" value="0"
+							<input class="easyui-textbox" name="finalAmt" style="width:80%" value="0"
 								data-options="label:'尾付(元):',required:true">
+							<span style="color:#ff4757"  title="尾付金额用99期来表示，还款是和最后一期一起还的" class="easyui-tooltip">提示</span>
 						</div>
 						<div style="margin-bottom:20px">
 							<input class="easyui-textbox" name="term" style="width:100%" value="12"
