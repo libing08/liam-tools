@@ -7,12 +7,21 @@ var CalcHandler = {
 				dataObj[field.name] = field.value;
 			});
 			var plans = [];
-			// 等额本息
 			switch(dataObj.repayMethod) {
-				case 'debx': plans = CalcHandler.calcDebxRepayPlan(dataObj); break;
-				case 'debj': plans = CalcHandler.calcDebjRepayPlan(dataObj); break;
+				case 'debx': plans = CalcHandler.calcDebxRepayPlan(dataObj); break; // 等额本息
+				case 'debj': plans = CalcHandler.calcDebjRepayPlan(dataObj); break; // 等额本金
+				case 'dbdx': plans = CalcHandler.calcDbdxRepayPlan(dataObj); break; // 等本等息
+				case 'xxhb': plans = CalcHandler.calcXxhbRepayPlan(dataObj); break; // 先息后本
 				default: break;
 			}
+			var totalItem = {};
+			var totalMonth = totalPrincipal = totalPaidAmt = 0;
+			$.each(plans, (i, item)=>{
+				totalMonth = $.add(totalMonth, item.monthAmt);
+				totalPrincipal = $.add(totalPrincipal, item.principalAmt);
+				totalPaidAmt = $.add(totalPaidAmt, item.paidAmt);
+			})
+			plans.push({term: '总计', monthAmt: totalMonth, principalAmt: totalPrincipal, paidAmt: totalPaidAmt, beginAmt: '-'});
 			
 			$('#planTable').datagrid({
 			 	title: '还款计划表',
@@ -134,6 +143,70 @@ var CalcHandler = {
 		planItem.beginAmt = $.sub(planItem.beginAmt, planItem.principalAmt);
 		planItem.principalAmt = planItem.beginAmt;
 		planItem.paidAmt = $.round($.mul(planItem.beginAmt, rate));
+		planItem.monthAmt = $.add(planItem.principalAmt, planItem.paidAmt);
+		planItem.term = term;
+		plans.push(planItem);
+		return plans;
+	},
+	/**
+	 * 等本等息：每期本金和利息都相同
+	 */
+	calcDbdxRepayPlan: (dataObj) => {
+		var plans = [];
+		var term = parseInt(dataObj.term); // 总期数
+		var totalAmt = parseFloat(dataObj.totalAmt); //总金额
+		var principalAmt = $.round($.div(totalAmt, term)); // 每期本金
+		var rate = parseFloat(dataObj.rate) / 1200; // 月利率
+		var paidAmt = $.round($.mul(totalAmt, rate)); // 利息=总金额*月利率
+		
+		// 每一期还款计划表项
+		var planItem = {
+			beginAmt: totalAmt, //期初本金
+			monthAmt: $.add(principalAmt, paidAmt), // 每期月供
+			principalAmt: 0.0, //每期本金
+			paidAmt: paidAmt //每期利息
+		};
+		for (var i = 1; i < term; i++) {
+			// 期数
+			planItem.term = i;
+			// 期初本金
+			planItem.beginAmt = $.sub(planItem.beginAmt, planItem.principalAmt);
+			planItem.principalAmt = principalAmt;
+			plans.push($.extend({}, planItem));
+		}
+		// 最后一期，平尾差
+		planItem.beginAmt = $.sub(planItem.beginAmt, planItem.principalAmt);
+		planItem.principalAmt = planItem.beginAmt;
+		planItem.monthAmt = $.add(planItem.principalAmt, planItem.paidAmt);
+		planItem.term = term;
+		plans.push(planItem);
+		return plans;
+	},
+	/**
+	 * 先息后本：最后一期还本付息
+	 */
+	calcXxhbRepayPlan: (dataObj) => {
+		var plans = [];
+		var term = parseInt(dataObj.term); // 总期数
+		var totalAmt = parseFloat(dataObj.totalAmt); //总金额
+		var principalAmt = $.round($.div(totalAmt, term)); // 每期本金
+		var rate = parseFloat(dataObj.rate) / 1200; // 月利率
+		var paidAmt = $.round($.mul(totalAmt, rate)); // 利息=总金额*月利率
+		
+		// 每一期还款计划表项
+		var planItem = {
+			beginAmt: totalAmt, //期初本金
+			monthAmt: paidAmt, // 每期月供
+			principalAmt: 0.0, //每期本金
+			paidAmt: paidAmt //每期利息
+		};
+		for (var i = 1; i < term; i++) {
+			// 期数
+			planItem.term = i;
+			plans.push($.extend({}, planItem));
+		}
+		// 最后一期，平尾差
+		planItem.principalAmt = planItem.beginAmt;
 		planItem.monthAmt = $.add(planItem.principalAmt, planItem.paidAmt);
 		planItem.term = term;
 		plans.push(planItem);
