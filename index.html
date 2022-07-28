@@ -6,6 +6,12 @@
 		<link rel="stylesheet" type="text/css" href="resources/easyui.css">
 		<link rel="stylesheet" href="resources/icon.css">
 		<link rel="stylesheet" type="text/css" href="resources/demo.css">
+		<style>
+			.bg-content {
+				background-color: #d5ebe1;
+				/* opacity:0.5; */
+			}
+		</style>
 		<script src="resources/js/jquery.min.js"></script>
 		<script src="resources/js/jquery.easyui.min.js"></script>
 		<script src="resources/js/decimal.js"></script>
@@ -17,11 +23,11 @@
 			})
 		</script>
 	</head>
-	<body>
-		<div id="tt" class="easyui-tabs" style="width:100%;min-height:550px"
+	<body class="bg-content">
+		<div id="tt" class="easyui-tabs bg-content" style="width:100%;min-height:550px"
 			data-options="tabPosition:'left', headerWidth:130, tabWidth:120,pill:true">
-			<div title="等额本息" style="padding:10px; ">
-				<div class="easyui-panel" title="基础数据" style="width: 500px; min-height:400px;padding:30px 60px; ">
+			<div title="等额本息" class="bg-content" style="padding:10px;" >
+				<div class="easyui-panel bg-content" title="基础数据" style="width: 500px; min-height:400px;padding:30px 60px;">
 					<form id="ff" method="post" >
 						<div style="margin-bottom:20px">
 							<input class="easyui-textbox" name="totalAmt" style="width:100%" value="10000"

@@ -1,6 +1,12 @@
 var CalcHandler = {
 	// 计算还款计划表
 	calcRepayPlans: ()=>{
+		$('#ff').on('keyup', evt=>{
+			if(evt.keyCode == 13){// 回车
+				$('#submit').trigger('click');
+			}
+		})
+		
 		$('#submit').click(() => {
 			var dataObj = {};
 			$.each($("#ff").serializeArray(), function(i, field) {
